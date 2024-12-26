@@ -147,16 +147,16 @@ public class RandomWeatherEvents {
     private void startMeteorShower(Player player) {
         new BukkitRunnable() {
             private int ticksElapsed = 0; // Track elapsed ticks
-            private final int maxDurationTicks = 40 * 20; // 40 seconds in ticks
+            private final int maxDurationTicks = 30 * 20; // 30 seconds in ticks
 
             @Override
             public void run() {
-                if (ticksElapsed >= maxDurationTicks) { // Stop after 40 seconds
+                if (ticksElapsed >= maxDurationTicks) { // Stop after 30 seconds
                     cancel();
                     return;
                 }
 
-                for (int i = 0; i < 30; i++) { // Spawns 30 fireballs
+                for (int i = 0; i < 10; i++) { // Spawns 10 fireballs
                     // Randomized location for the start of the fireball (near the player in the sky)
                     Location skyStart = player.getLocation().add(random.nextInt(40) - 20, 30, random.nextInt(40) - 20);
 
@@ -198,6 +198,9 @@ public class RandomWeatherEvents {
 
                 // Adjust to the highest block at the location
                 impactLocation = player.getWorld().getHighestBlockAt(impactLocation).getLocation();
+
+                // Thunderstrike at impact location
+                impactLocation.getWorld().strikeLightning(impactLocation);
 
                 // Huge explosion effects
                 impactLocation.getWorld().playSound(impactLocation, Sound.ENTITY_GENERIC_EXPLODE, 6.0f, 0.5f);
@@ -313,6 +316,9 @@ public class RandomWeatherEvents {
                 // Huge explosion effects
                 impactLocation.getWorld().playSound(impactLocation, Sound.ENTITY_GENERIC_EXPLODE, 6.0f, 0.5f);
                 impactLocation.getWorld().spawnParticle(Particle.EXPLOSION_HUGE, impactLocation, 20, 3.0, 3.0, 3.0, 0.1);
+
+                // Strike a lightning bolt at the impact location
+                impactLocation.getWorld().strikeLightning(impactLocation);
 
                 createTreasureCrater(impactLocation);
             }

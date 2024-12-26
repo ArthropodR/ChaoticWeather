@@ -1,0 +1,26 @@
+# Chaotic Weather Plugin Config
+
+# Settings for random events that can occur during gameplay
+random_events:
+  enabled: true  # Whether random weather events are enabled or not
+  meteor_shower: true  # Whether meteor showers can occur
+  meteor_shower_chance: 0.1667  # 16.67% chance for meteor showers to happen
+  meteor_impact: true  # Whether meteor impacts with craters can occur
+  meteor_impact_chance: 0.1667  # 16.67% chance for meteor impacts to happen
+  treasure_meteor: true  # Whether treasure meteors can spawn and drop loot
+  treasure_meteor_chance: 0.1667  # 16.67% chance for treasure meteors to spawn
+  auroraStorm: true  # Whether Aurora Storm events are enabled
+  auroraStorm_chance: 0.1667  # 16.67% chance for aurora storm to trigger
+  hailstorm: true  # Whether hailstorms and ice hazards are enabled
+  hailstorm_chance: 0.1667  # 16.67% chance for a hailstorm to trigger
+  hurricane_winds: true  # Whether hurricane winds are enabled
+  hurricane_winds_chance: 0.1667  # 16.67% chance for hurricane winds to trigger
+
+# Settings for more controlled weather-related events
+events:
+  rain_effects: true  # Whether to apply special effects (like speed boosts) when it's raining
+  rain_effects_probability: 2  # 1 = Speed, 2 = Strength, 3 = Healing, 4 = Blindness (rain effects)
+  thunderstorm_effects: true  # Whether to apply special effects during thunderstorms
+  thunderstorm_effects_probability: 3  # 1 = Blindness, 2 = Slowness, 3 = Strength (thunderstorm effects)
+  plant_growth_enhancement: true  # Whether plant growth is enhanced during rain (e.g., flowers or crops growing faster)
+  thunderstorm_damage_effects: true  # Whether to apply damage effects during thunderstorms (e.g., lightning strikes)

@@ -1,0 +1,17 @@
+name: ChaoticWeather
+version: 1.0.0
+main: com.ArthropodR.chaoticweather.ChaoticWeather
+api-version: 1.19
+description: A plugin introducing chaotic weather events to Minecraft.
+Author: ArthropodR
+commands:
+  chaoticweather:
+    description: Controls the ChaoticWeather plugin.
+    usage: /chaoticweather <reload|summon>
+permissions:
+  chaoticweather.reload:
+    description: Allows players to reload the plugin.
+    default: op
+  chaoticweather.summon:
+    description: Allows players to summon specific events.
+    default: op

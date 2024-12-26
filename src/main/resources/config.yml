@@ -1,5 +1,13 @@
 # Chaotic Weather Plugin Config
-
+############################################################################
+#                                                                          #
+#                          NoCreeperExplosion                              #
+#                                                                          #
+# Made by: ArthropodR                                                      #
+# Bug Reports: https://github.com/ArthropodR/ChaoticWeather/issues         #
+# Source Code: https://github.com/lolnypop/NoCreeperExplosion              #
+#                                                                          #
+############################################################################
 # Settings for random events that can occur during gameplay
 random_events:
   enabled: true  # Whether random weather events are enabled or not

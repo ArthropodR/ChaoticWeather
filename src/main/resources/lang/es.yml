@@ -1,0 +1,42 @@
+messages:
+  language_change_success: "ChaoticWeather: Idioma cambiado con éxito a español."
+  language_usage: "Uso: /chaoticweather language <eng|fr|es|ru>"
+  invalid_language: "Idioma no válido. Soportados: eng, fr, es, ru."
+
+  command_only_for_players: "Este comando solo puede ser usado por jugadores."
+  no_permission_reload: "No tienes permiso para recargar el plugin."
+  no_permission_summon: "No tienes permiso para invocar eventos."
+  config_reloaded: "ChaoticWeather: Configuración recargada."
+  usage_summon: "Uso: /chaoticweather summon <evento>"
+  unknown_command: "Comando desconocido. Uso: /chaoticweather <reload | summon | language>"
+  storm_brewing: "ChaoticWeather: ¡Se está formando una tormenta!"
+
+  random_events:
+    meteor_shower: "¡Comienza una lluvia de meteoritos!"
+    meteor_impact: "¡Un meteorito golpea la tierra!"
+    treasure_meteor: "¡Un meteorito de tesoro ha aterrizado cerca!"
+    hurricane_winds: "¡Un viento huracanado te empuja!"
+    hailstorm: "¡Una tormenta de granizo congela el mundo a tu alrededor!"
+    aurora_storm: "¡Una rara tormenta auroral ilumina el cielo!"
+
+    summon_events:
+      meteor_shower: "Invocando una lluvia de meteoritos."
+      meteor_impact: "Invocando un impacto de meteorito."
+      treasure_meteor: "Invocando un meteorito de tesoro."
+      hurricane_winds: "Invocando vientos huracanados."
+      hailstorm: "Invocando una tormenta de granizo."
+      aurora_storm: "Invocando una tormenta auroral."
+
+    unknown_event: "Evento desconocido: %event%"
+
+  events:
+    rain_effects:
+      speed: "¡Sientes un impulso de energía bajo la lluvia!"
+      increase_damage: "¡La lluvia te ha hecho más fuerte!"
+      heal: "¡La lluvia cura tus heridas!"
+      blindness: "La lluvia nubla tu visión..."
+
+    thunderstorm_effects:
+      blindness: "¡Un rayo cae cerca y te sientes desorientado!"
+      slow: "¡La tormenta eléctrica te ralentiza!"
+      increase_damage: "¡Sientes el poder de la tormenta, aumentando tu fuerza!"

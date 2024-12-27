@@ -1,0 +1,42 @@
+messages:
+  language_change_success: "ChaoticWeather: Langue changée avec succès en français."
+  language_usage: "Utilisation : /chaoticweather language <eng|fr|es|ru>"
+  invalid_language: "Langue invalide. Pris en charge : eng, fr, es, ru."
+
+  command_only_for_players: "Cette commande peut uniquement être utilisée par les joueurs."
+  no_permission_reload: "Vous n'avez pas la permission de recharger le plugin."
+  no_permission_summon: "Vous n'avez pas la permission d'invoquer des événements."
+  config_reloaded: "ChaoticWeather : Configuration rechargée."
+  usage_summon: "Utilisation : /chaoticweather summon <événement>"
+  unknown_command: "Commande inconnue. Utilisation : /chaoticweather <reload | summon | language>"
+  storm_brewing: "ChaoticWeather : Une tempête se prépare !"
+
+  random_events:
+    meteor_shower: "Une pluie de météores commence !"
+    meteor_impact: "Un météore frappe la terre !"
+    treasure_meteor: "Un météore au trésor s'est écrasé à proximité !"
+    hurricane_winds: "Un vent d'ouragan vous pousse !"
+    hailstorm: "Une tempête de grêle gèle le monde autour de vous !"
+    aurora_storm: "Une rare tempête aurorale illumine le ciel !"
+
+    summon_events:
+      meteor_shower: "Invocation d'une pluie de météores."
+      meteor_impact: "Invocation d'un impact de météore."
+      treasure_meteor: "Invocation d'un météore au trésor."
+      hurricane_winds: "Invocation de vents d'ouragan."
+      hailstorm: "Invocation d'une tempête de grêle."
+      aurora_storm: "Invocation d'une tempête aurorale."
+
+    unknown_event: "Événement inconnu : %event%"
+
+  events:
+    rain_effects:
+      speed: "Vous ressentez un regain d'énergie sous la pluie !"
+      increase_damage: "La pluie vous a rendu plus fort !"
+      heal: "La pluie soigne vos blessures !"
+      blindness: "La pluie obscurcit votre vision..."
+
+    thunderstorm_effects:
+      blindness: "Un éclair frappe à proximité et vous désoriente !"
+      slow: "L'orage vous ralentit !"
+      increase_damage: "Vous sentez la puissance de la tempête, augmentant votre force !"

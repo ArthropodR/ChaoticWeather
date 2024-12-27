@@ -1,0 +1,42 @@
+messages:
+  language_change_success: "ChaoticWeather: Successfully changed the language to English."
+  language_usage: "Usage: /chaoticweather language <eng|fr|es|ru>"
+  invalid_language: "Invalid language. Supported: eng, fr, es, ru."
+
+  command_only_for_players: "This command can only be used by players."
+  no_permission_reload: "You do not have permission to reload the plugin."
+  no_permission_summon: "You do not have permission to summon events."
+  config_reloaded: "ChaoticWeather: Configuration reloaded."
+  usage_summon: "Usage: /chaoticweather summon <event>"
+  unknown_command: "Unknown command. Usage: /chaoticweather <reload | summon | language>"
+  storm_brewing: "ChaoticWeather: A storm is brewing!"
+
+  random_events:
+    meteor_shower: "A meteor shower begins!"
+    meteor_impact: "A meteor strikes the earth!"
+    treasure_meteor: "A Treasure Meteor has landed nearby!"
+    hurricane_winds: "A sudden gust of wind pushes you!"
+    hailstorm: "A hailstorm freezes the world around you!"
+    aurora_storm: "A rare Aurora Storm lights up the sky!"
+
+    summon_events:
+      meteor_shower: "Summoning a Meteor Shower!"
+      meteor_impact: "Summoning a Meteor Impact!"
+      treasure_meteor: "Summoning a Treasure Meteor!"
+      hurricane_winds: "Summoning Hurricane Winds!"
+      hailstorm: "Summoning a Hailstorm!"
+      aurora_storm: "Summoning an Aurora Storm!"
+
+    unknown_event: "Unknown event: %event%"
+
+  events:
+    rain_effects:
+      speed: "You feel a boost of energy in the rain!"
+      increase_damage: "The rain has made you stronger!"
+      heal: "The rain heals your wounds!"
+      blindness: "The rain clouds your vision..."
+
+    thunderstorm_effects:
+      blindness: "A lightning bolt strikes nearby, and you feel disoriented!"
+      slow: "The thunderstorm slows you down!"
+      increase_damage: "You feel the power of the storm, boosting your strength!"

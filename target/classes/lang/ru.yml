@@ -1,0 +1,42 @@
+messages:
+  language_change_success: "ChaoticWeather: Язык успешно изменён на русский."
+  language_usage: "Использование: /chaoticweather language <eng|fr|es|ru>"
+  invalid_language: "Неверный язык. Поддерживаемые: eng, fr, es, ru."
+
+  command_only_for_players: "Эту команду могут использовать только игроки."
+  no_permission_reload: "У вас нет прав на перезагрузку плагина."
+  no_permission_summon: "У вас нет прав на вызов событий."
+  config_reloaded: "ChaoticWeather: Конфигурация перезагружена."
+  usage_summon: "Использование: /chaoticweather summon <событие>"
+  unknown_command: "Неизвестная команда. Использование: /chaoticweather <reload | summon | language>"
+  storm_brewing: "ChaoticWeather: Надвигается буря!"
+
+  random_events:
+    meteor_shower: "Начинается метеорный дождь!"
+    meteor_impact: "Метеор ударяет о землю!"
+    treasure_meteor: "Сокровищный метеор упал неподалеку!"
+    hurricane_winds: "Сильный ураганный ветер толкает вас!"
+    hailstorm: "Град замораживает окружающий мир!"
+    aurora_storm: "Редкая авроральная буря освещает небо!"
+
+    summon_events:
+      meteor_shower: "Вызывается метеорный дождь."
+      meteor_impact: "Вызывается метеорный удар."
+      treasure_meteor: "Вызывается сокровищный метеор."
+      hurricane_winds: "Вызываются ураганные ветры."
+      hailstorm: "Вызывается град."
+      aurora_storm: "Вызывается авроральная буря."
+
+    unknown_event: "Неизвестное событие: %event%"
+
+  events:
+    rain_effects:
+      speed: "Вы чувствуете прилив энергии под дождём!"
+      increase_damage: "Дождь сделал вас сильнее!"
+      heal: "Дождь исцеляет ваши раны!"
+      blindness: "Дождь затуманивает ваше зрение..."
+
+    thunderstorm_effects:
+      blindness: "Молния ударяет рядом, и вы чувствуете себя дезориентированным!"
+      slow: "Гроза замедляет вас!"
+      increase_damage: "Вы чувствуете силу бури, усиливая вашу мощь!"

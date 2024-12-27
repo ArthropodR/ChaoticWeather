@@ -7,7 +7,7 @@ Author: ArthropodR
 commands:
   chaoticweather:
     description: Controls the ChaoticWeather plugin.
-    usage: /chaoticweather <reload|summon>
+    usage: /chaoticweather <reload|summon|language>
 permissions:
   chaoticweather.reload:
     description: Allows players to reload the plugin.
@@ -15,3 +15,9 @@ permissions:
   chaoticweather.summon:
     description: Allows players to summon specific events.
     default: op
+
+resources:
+  - lang/en.yml
+  - lang/es.yml
+  - lang/fr.yml
+  - lang/ru.yml

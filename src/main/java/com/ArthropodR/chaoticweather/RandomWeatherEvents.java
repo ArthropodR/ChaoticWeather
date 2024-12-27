@@ -18,13 +18,14 @@ import org.bukkit.block.Biome;
 import java.util.*;
 
 public class RandomWeatherEvents {
-
     private final JavaPlugin plugin;
     private final Random random = new Random();
-    private boolean eventInProgress = false; // Prevent overlapping events
+    private boolean eventInProgress = false;
+    private final TranslationManager translationManager;
 
-    public RandomWeatherEvents(JavaPlugin plugin) {
+    public RandomWeatherEvents(JavaPlugin plugin, TranslationManager translationManager) {
         this.plugin = plugin;
+        this.translationManager = translationManager;
     }
 
     public void startRandomEvents() {
@@ -49,44 +50,40 @@ public class RandomWeatherEvents {
     }
 
     private void triggerRandomEvent(World world) {
-        // Ensure only one event happens in the interval
         if (eventInProgress) return;
 
         List<Player> players = new ArrayList<>(Bukkit.getOnlinePlayers());
         if (players.isEmpty()) return;
 
         Player player = players.get(random.nextInt(players.size()));
-        eventInProgress = true; // Mark event as in progress
+        eventInProgress = true;
 
         boolean isInIcyBiome = isInIcyBiome(player);
 
         if (plugin.getConfig().getBoolean("random_events.meteor_shower") &&
                 random.nextDouble() < plugin.getConfig().getDouble("random_events.meteor_shower_chance")) {
-            player.sendMessage(ChatColor.LIGHT_PURPLE + "A meteor shower begins!");
+            player.sendMessage(ChatColor.LIGHT_PURPLE + translationManager.getMessage("random_events.meteor_shower"));
             startMeteorShower(player);
         } else if (plugin.getConfig().getBoolean("random_events.meteor_impact") &&
                 random.nextDouble() < plugin.getConfig().getDouble("random_events.meteor_impact_chance")) {
-            player.sendMessage(ChatColor.RED + "A meteor strikes the earth!");
+            player.sendMessage(ChatColor.RED + translationManager.getMessage("random_events.meteor_impact"));
             spawnMeteorImpact(player);
         } else if (plugin.getConfig().getBoolean("random_events.treasure_meteor") &&
                 random.nextDouble() < plugin.getConfig().getDouble("random_events.treasure_meteor_chance")) {
-            player.sendMessage(ChatColor.GOLD + "A Treasure Meteor has landed nearby!");
+            player.sendMessage(ChatColor.GOLD + translationManager.getMessage("random_events.treasure_meteor"));
             spawnTreasureMeteor(player);
         } else if (plugin.getConfig().getBoolean("random_events.hurricane_winds") &&
                 random.nextDouble() < plugin.getConfig().getDouble("random_events.hurricane_winds_chance")) {
-            player.sendMessage(ChatColor.BLUE + "A sudden gust of wind pushes you!");
+            player.sendMessage(ChatColor.BLUE + translationManager.getMessage("random_events.hurricane_winds"));
             HurricaneWinds(player);
         } else if (isInIcyBiome) {
-            // Include icy biome-specific events if in an icy biome
             if (plugin.getConfig().getBoolean("random_events.hailstorm") &&
                     random.nextDouble() < plugin.getConfig().getDouble("random_events.hailstorm_chance")) {
-                if (player.getLocation().getY() > 40) {
-                    player.sendMessage(ChatColor.AQUA + "A hailstorm freezes the world around you!");
-                    spawnIceHazards(player);
-                }
-            } else if (plugin.getConfig().getBoolean("random_events.auroraStorm") &&
-                    random.nextDouble() < plugin.getConfig().getDouble("random_events.auroraStorm_chance")) {
-                player.sendMessage(ChatColor.GREEN + "A rare Aurora Storm lights up the sky!");
+                player.sendMessage(ChatColor.AQUA + translationManager.getMessage("random_events.hailstorm"));
+                spawnIceHazards(player);
+            } else if (plugin.getConfig().getBoolean("random_events.aurora_storm") &&
+                    random.nextDouble() < plugin.getConfig().getDouble("random_events.aurora_storm_chance")) {
+                player.sendMessage(ChatColor.GREEN + translationManager.getMessage("random_events.aurora_storm"));
                 startAuroraStorm(world);
             }
         }
@@ -114,31 +111,31 @@ public class RandomWeatherEvents {
     public void summonEvent(Player player, String eventName) {
         switch (eventName.toLowerCase()) {
             case "meteor_shower":
-                player.sendMessage(ChatColor.LIGHT_PURPLE + "Summoning a Meteor Shower!");
+                player.sendMessage(ChatColor.LIGHT_PURPLE + translationManager.getMessage("random_events.summon_events.meteor_shower"));
                 startMeteorShower(player);
                 break;
             case "meteor_impact":
-                player.sendMessage(ChatColor.RED + "Summoning a Meteor Impact!");
+                player.sendMessage(ChatColor.RED + translationManager.getMessage("random_events.summon_events.meteor_impact"));
                 spawnMeteorImpact(player);
                 break;
             case "treasure_meteor":
-                player.sendMessage(ChatColor.GOLD + "Summoning a Treasure Meteor!");
+                player.sendMessage(ChatColor.GOLD + translationManager.getMessage("random_events.summon_events.treasure_meteor"));
                 spawnTreasureMeteor(player);
                 break;
             case "hurricane_winds":
-                player.sendMessage(ChatColor.BLUE + "Summoning Hurricane Winds!");
+                player.sendMessage(ChatColor.BLUE + translationManager.getMessage("random_events.summon_events.hurricane_winds"));
                 HurricaneWinds(player);
                 break;
             case "hailstorm":
-                player.sendMessage(ChatColor.AQUA + "Summoning a Hailstorm!");
+                player.sendMessage(ChatColor.AQUA + translationManager.getMessage("random_events.summon_events.hailstorm"));
                 hailstorm(player);
                 break;
             case "aurora_storm":
-                player.sendMessage(ChatColor.GREEN + "Summoning an Aurora Storm!");
+                player.sendMessage(ChatColor.GREEN + translationManager.getMessage("random_events.summon_events.aurora_storm"));
                 startAuroraStorm(player.getWorld());
                 break;
             default:
-                player.sendMessage(ChatColor.RED + "Unknown event: " + eventName);
+                player.sendMessage(ChatColor.RED + translationManager.getMessage("random_events.unknown_event").replace("%event%", eventName));
                 break;
         }
     }

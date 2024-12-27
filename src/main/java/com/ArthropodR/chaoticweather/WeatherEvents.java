@@ -15,8 +15,8 @@ import java.util.Map;
 import java.util.Set;
 
 public class WeatherEvents {
-
     private final ChaoticWeather plugin;
+    private final TranslationManager translationManager;
     private final Set<Player> activeRainPlayers = new HashSet<>();
     private final Set<Player> activeThunderstormPlayers = new HashSet<>();
     private final Map<Player, Long> rainEffectsApplied = new HashMap<>();
@@ -24,8 +24,9 @@ public class WeatherEvents {
 
     private static final long COOLDOWN_PERIOD = 10 * 60 * 1000; // 10 minutes in milliseconds
 
-    public WeatherEvents(ChaoticWeather plugin) {
+    public WeatherEvents(ChaoticWeather plugin, TranslationManager translationManager) {
         this.plugin = plugin;
+        this.translationManager = translationManager;
     }
 
     public void startRainEffectTask() {
@@ -80,19 +81,19 @@ public class WeatherEvents {
             switch (randomEffect) {
                 case 1:
                     player.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, 1200, 0));
-                    player.sendMessage(ChatColor.GREEN + "You feel a boost of energy in the rain!");
+                    player.sendMessage(ChatColor.GREEN + translationManager.getMessage("events.rain_effects.speed"));
                     break;
                 case 2:
                     player.addPotionEffect(new PotionEffect(PotionEffectType.INCREASE_DAMAGE, 1200, 0));
-                    player.sendMessage(ChatColor.RED + "The rain has made you stronger!");
+                    player.sendMessage(ChatColor.RED + translationManager.getMessage("events.rain_effects.increase_damage"));
                     break;
                 case 3:
-                    player.addPotionEffect(new PotionEffect(PotionEffectType.HEAL, 20, 0)); // Instant heal
-                    player.sendMessage(ChatColor.GOLD + "The rain heals your wounds!");
+                    player.addPotionEffect(new PotionEffect(PotionEffectType.HEAL, 20, 0));
+                    player.sendMessage(ChatColor.GOLD + translationManager.getMessage("events.rain_effects.heal"));
                     break;
                 case 4:
                     player.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 1200, 0));
-                    player.sendMessage(ChatColor.DARK_PURPLE + "The rain clouds your vision...");
+                    player.sendMessage(ChatColor.DARK_PURPLE + translationManager.getMessage("events.rain_effects.blindness"));
                     break;
             }
         }
@@ -173,15 +174,15 @@ public class WeatherEvents {
             switch (randomEffect) {
                 case 1:
                     player.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 1200, 0));
-                    player.sendMessage(ChatColor.DARK_GRAY + "A lightning bolt strikes nearby, and you feel disoriented!");
+                    player.sendMessage(ChatColor.DARK_GRAY + translationManager.getMessage("events.thunderstorm_effects.blindness"));
                     break;
                 case 2:
                     player.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, 1200, 0));
-                    player.sendMessage(ChatColor.DARK_RED + "The thunderstorm slows you down!");
+                    player.sendMessage(ChatColor.DARK_RED + translationManager.getMessage("events.thunderstorm_effects.slow"));
                     break;
                 case 3:
                     player.addPotionEffect(new PotionEffect(PotionEffectType.INCREASE_DAMAGE, 1200, 0));
-                    player.sendMessage(ChatColor.GRAY + "You feel the power of the storm, boosting your strength!");
+                    player.sendMessage(ChatColor.GRAY + translationManager.getMessage("events.thunderstorm_effects.increase_damage"));
                     break;
             }
         }

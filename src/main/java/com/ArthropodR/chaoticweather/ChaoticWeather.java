@@ -21,8 +21,9 @@ import java.util.Random;
 public class ChaoticWeather extends JavaPlugin implements Listener, TabCompleter, CommandExecutor {
 
     private final Random random = new Random();
-    private com.ArthropodR.chaoticweather.WeatherEvents weatherEvents;
+    private WeatherEvents weatherEvents;
     private RandomWeatherEvents randomWeatherEvents;
+    private TranslationManager translationManager;
 
     @Override
     public void onEnable() {
@@ -32,8 +33,12 @@ public class ChaoticWeather extends JavaPlugin implements Listener, TabCompleter
         Bukkit.getPluginManager().registerEvents(this, this);
         getLogger().info("Chaotic Weather plugin has been enabled!");
 
-        weatherEvents = new com.ArthropodR.chaoticweather.WeatherEvents(this);
-        randomWeatherEvents = new RandomWeatherEvents(this);
+        // Initialize translation manager first
+        translationManager = new TranslationManager(this);
+
+        // Pass translationManager to other classes
+        weatherEvents = new WeatherEvents(this, translationManager);
+        randomWeatherEvents = new RandomWeatherEvents(this, translationManager);
 
         if (getConfig().getBoolean("random_events.enabled")) {
             randomWeatherEvents.startRandomEvents();
@@ -54,35 +59,59 @@ public class ChaoticWeather extends JavaPlugin implements Listener, TabCompleter
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
+        if (args.length < 1) {
+            sender.sendMessage(ChatColor.YELLOW + translationManager.getMessage("language_usage"));
+            return true;
+        }
+
+        if (args[0].equalsIgnoreCase("language")) {
+            if (args.length < 2) {
+                sender.sendMessage(ChatColor.YELLOW + translationManager.getMessage("language_usage"));
+                return true;
+            }
+
+            String languageCode = switch (args[1].toLowerCase()) {
+                case "eng" -> "en";
+                case "fr" -> "fr";
+                case "es" -> "es";
+                case "ru" -> "ru";
+                default -> null;
+            };
+
+            if (languageCode == null) {
+                sender.sendMessage(ChatColor.RED + translationManager.getMessage("invalid_language"));
+                return true;
+            }
+
+            translationManager.loadLanguage(languageCode);
+            sender.sendMessage(ChatColor.GREEN + translationManager.getMessage("language_change_success"));
+            return true;
+        }
+
         if (!(sender instanceof Player)) {
-            sender.sendMessage(ChatColor.RED + "This command can only be used by players.");
+            sender.sendMessage(ChatColor.RED + translationManager.getMessage("command_only_for_players"));
             return true;
         }
 
         Player player = (Player) sender;
 
-        if (!player.hasPermission("chaoticweather.summon")) {
-            player.sendMessage(ChatColor.RED + "You do not have permission to use this command.");
-            return true;
-        }
-
-        if (args.length < 1) {
-            player.sendMessage(ChatColor.YELLOW + "Usage: /chaoticweather <reload | summon> [event]");
-            return true;
-        }
-
         if (args[0].equalsIgnoreCase("reload")) {
             if (!player.hasPermission("chaoticweather.reload")) {
-                player.sendMessage(ChatColor.RED + "You do not have permission to reload the plugin.");
+                player.sendMessage(ChatColor.RED + translationManager.getMessage("no_permission_reload"));
                 return true;
             }
 
             reloadConfig();
-            player.sendMessage(ChatColor.GREEN + "ChaoticWeather configuration reloaded.");
+            player.sendMessage(ChatColor.GREEN + translationManager.getMessage("config_reloaded"));
             return true;
         } else if (args[0].equalsIgnoreCase("summon")) {
+            if (!player.hasPermission("chaoticweather.summon")) {
+                player.sendMessage(ChatColor.RED + translationManager.getMessage("no_permission_summon"));
+                return true;
+            }
+
             if (args.length < 2) {
-                player.sendMessage(ChatColor.YELLOW + "Usage: /chaoticweather summon <event>");
+                player.sendMessage(ChatColor.YELLOW + translationManager.getMessage("usage_summon"));
                 return true;
             }
 
@@ -93,7 +122,7 @@ public class ChaoticWeather extends JavaPlugin implements Listener, TabCompleter
             return true;
         }
 
-        player.sendMessage(ChatColor.RED + "Unknown command. Usage: /chaoticweather <reload | summon>");
+        sender.sendMessage(ChatColor.RED + translationManager.getMessage("unknown_command"));
         return true;
     }
 
@@ -101,9 +130,11 @@ public class ChaoticWeather extends JavaPlugin implements Listener, TabCompleter
     @Override
     public List<String> onTabComplete(@NotNull CommandSender sender, @NotNull Command command, @NotNull String alias, @NotNull String[] args) {
         if (args.length == 1) {
-            return Arrays.asList("reload", "summon");
+            return Arrays.asList("reload", "summon", "language");
         } else if (args.length == 2 && args[0].equalsIgnoreCase("summon")) {
             return Arrays.asList("meteor_shower", "meteor_impact", "treasure_meteor", "hurricane_winds", "hailstorm", "aurora_storm");
+        } else if (args.length == 2 && args[0].equalsIgnoreCase("language")) {
+            return Arrays.asList("eng", "fr", "es", "ru");
         }
         return new ArrayList<>();
     }
@@ -116,7 +147,7 @@ public class ChaoticWeather extends JavaPlugin implements Listener, TabCompleter
     @EventHandler
     public void onWeatherChange(WeatherChangeEvent event) {
         if (event.toWeatherState()) {
-            Bukkit.broadcastMessage(ChatColor.GOLD + "Chaotic Weather: " + ChatColor.AQUA + "A storm is brewing!");
+            Bukkit.broadcastMessage(ChatColor.GOLD + translationManager.getMessage("storm_brewing"));
         }
     }
 }

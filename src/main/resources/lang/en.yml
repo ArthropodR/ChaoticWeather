@@ -4,11 +4,13 @@ messages:
   invalid_language: "Invalid language. Supported: eng, fr, es, ru."
 
   command_only_for_players: "This command can only be used by players."
+  no_permission: "You do not have permission to use this command."
   no_permission_reload: "You do not have permission to reload the plugin."
   no_permission_summon: "You do not have permission to summon events."
+  no_permission_language: "You do not have permission to change the language."
   config_reloaded: "ChaoticWeather: Configuration reloaded."
   usage_summon: "Usage: /chaoticweather summon <event>"
-  unknown_command: "Unknown command. Usage: /chaoticweather <reload | summon | language>"
+  unknown_command: "Unknown command. Usage: /chaoticweather <reload | summon | language | restrict>"
   storm_brewing: "ChaoticWeather: A storm is brewing!"
 
   random_events:
@@ -40,3 +42,11 @@ messages:
       blindness: "A lightning bolt strikes nearby, and you feel disoriented!"
       slow: "The thunderstorm slows you down!"
       increase_damage: "You feel the power of the storm, boosting your strength!"
+
+  event_restricted: "The event '%event%' has been restricted in the selected region."
+  event_restricted_location: "This event is restricted in your current location."
+  worldedit_missing: "WorldEdit plugin is not installed!"
+  worldedit_no_selection: "Please select a region using the WorldEdit wand first."
+  error_restricting: "An error occurred while processing your region selection."
+  plugin_enabled: "Chaotic Weather plugin has been enabled!"
+  plugin_disabled: "Chaotic Weather plugin has been disabled!"

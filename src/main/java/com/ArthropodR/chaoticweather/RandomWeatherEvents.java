@@ -22,30 +22,33 @@ public class RandomWeatherEvents {
     private final Random random = new Random();
     private boolean eventInProgress = false;
     private final TranslationManager translationManager;
+    private final RestrictedRegionsManager restrictedRegionsManager;
 
-    public RandomWeatherEvents(JavaPlugin plugin, TranslationManager translationManager) {
+    // List to store restricted events
+    private Set<String> restrictedEvents = new HashSet<>();
+
+    public RandomWeatherEvents(JavaPlugin plugin, TranslationManager translationManager, RestrictedRegionsManager restrictedRegionsManager) {
         this.plugin = plugin;
         this.translationManager = translationManager;
+        this.restrictedRegionsManager = restrictedRegionsManager;
     }
 
     public void startRandomEvents() {
-        // Only start if random events are enabled
         if (!plugin.getConfig().getBoolean("random_events.enabled")) return;
 
         new BukkitRunnable() {
             @Override
             public void run() {
-                if (eventInProgress) return; // Skip if an event is already happening
+                if (eventInProgress) return;
 
                 for (World world : Bukkit.getWorlds()) {
                     triggerRandomEvent(world);
                 }
             }
-        }.runTaskTimer(plugin, 0L, randomInterval()); // Schedule with random interval
+        }.runTaskTimer(plugin, 0L, randomInterval());
     }
 
     private long randomInterval() {
-        // Random interval between 10 and 15 minutes (in ticks)
         return (10 * 60 * 20L) + random.nextInt(5 * 60 * 20); // 10 to 15 minutes in ticks
     }
 
@@ -56,9 +59,13 @@ public class RandomWeatherEvents {
         if (players.isEmpty()) return;
 
         Player player = players.get(random.nextInt(players.size()));
+        Location playerLocation = player.getLocation();
         eventInProgress = true;
 
         boolean isInIcyBiome = isInIcyBiome(player);
+
+        // Check for restricted regions before triggering events
+        if (restrictedRegionsManager.isRestricted("meteor_shower", playerLocation)) return;
 
         if (plugin.getConfig().getBoolean("random_events.meteor_shower") &&
                 random.nextDouble() < plugin.getConfig().getDouble("random_events.meteor_shower_chance")) {
@@ -66,19 +73,23 @@ public class RandomWeatherEvents {
             startMeteorShower(player);
         } else if (plugin.getConfig().getBoolean("random_events.meteor_impact") &&
                 random.nextDouble() < plugin.getConfig().getDouble("random_events.meteor_impact_chance")) {
+            if (restrictedRegionsManager.isRestricted("meteor_impact", playerLocation)) return;
             player.sendMessage(ChatColor.RED + translationManager.getMessage("random_events.meteor_impact"));
             spawnMeteorImpact(player);
         } else if (plugin.getConfig().getBoolean("random_events.treasure_meteor") &&
                 random.nextDouble() < plugin.getConfig().getDouble("random_events.treasure_meteor_chance")) {
+            if (restrictedRegionsManager.isRestricted("treasure_meteor", playerLocation)) return;
             player.sendMessage(ChatColor.GOLD + translationManager.getMessage("random_events.treasure_meteor"));
             spawnTreasureMeteor(player);
         } else if (plugin.getConfig().getBoolean("random_events.hurricane_winds") &&
                 random.nextDouble() < plugin.getConfig().getDouble("random_events.hurricane_winds_chance")) {
+            if (restrictedRegionsManager.isRestricted("hurricane_winds", playerLocation)) return;
             player.sendMessage(ChatColor.BLUE + translationManager.getMessage("random_events.hurricane_winds"));
             HurricaneWinds(player);
         } else if (isInIcyBiome) {
             if (plugin.getConfig().getBoolean("random_events.hailstorm") &&
                     random.nextDouble() < plugin.getConfig().getDouble("random_events.hailstorm_chance")) {
+                if (restrictedRegionsManager.isRestricted("hailstorm", playerLocation)) return;
                 player.sendMessage(ChatColor.AQUA + translationManager.getMessage("random_events.hailstorm"));
                 spawnIceHazards(player);
             } else if (plugin.getConfig().getBoolean("random_events.aurora_storm") &&
@@ -88,7 +99,7 @@ public class RandomWeatherEvents {
             }
         }
 
-        // Schedule eventInProgress reset after the interval
+        // Schedule eventInProgress reset
         new BukkitRunnable() {
             @Override
             public void run() {
@@ -98,7 +109,6 @@ public class RandomWeatherEvents {
     }
 
     private boolean isInIcyBiome(Player player) {
-        // Specific icy biomes where events can occur
         Biome biome = player.getLocation().getBlock().getBiome();
         return biome == Biome.ICE_SPIKES ||
                 biome == Biome.SNOWY_PLAINS ||
@@ -109,38 +119,52 @@ public class RandomWeatherEvents {
     }
 
     public void summonEvent(Player player, String eventName) {
+        Location playerLocation = player.getLocation();
+
+        // Check for region restrictions
+        if (restrictedRegionsManager.isRestricted(eventName, playerLocation)) {
+            player.sendMessage(ChatColor.RED + translationManager.getMessage("event_restricted").replace("%event%", eventName));
+            return;
+        }
+
         switch (eventName.toLowerCase()) {
-            case "meteor_shower":
+            case "meteor_shower" -> {
                 player.sendMessage(ChatColor.LIGHT_PURPLE + translationManager.getMessage("random_events.summon_events.meteor_shower"));
                 startMeteorShower(player);
-                break;
-            case "meteor_impact":
+            }
+            case "meteor_impact" -> {
                 player.sendMessage(ChatColor.RED + translationManager.getMessage("random_events.summon_events.meteor_impact"));
                 spawnMeteorImpact(player);
-                break;
-            case "treasure_meteor":
+            }
+            case "treasure_meteor" -> {
                 player.sendMessage(ChatColor.GOLD + translationManager.getMessage("random_events.summon_events.treasure_meteor"));
                 spawnTreasureMeteor(player);
-                break;
-            case "hurricane_winds":
+            }
+            case "hurricane_winds" -> {
                 player.sendMessage(ChatColor.BLUE + translationManager.getMessage("random_events.summon_events.hurricane_winds"));
                 HurricaneWinds(player);
-                break;
-            case "hailstorm":
+            }
+            case "hailstorm" -> {
                 player.sendMessage(ChatColor.AQUA + translationManager.getMessage("random_events.summon_events.hailstorm"));
                 hailstorm(player);
-                break;
-            case "aurora_storm":
+            }
+            case "aurora_storm" -> {
                 player.sendMessage(ChatColor.GREEN + translationManager.getMessage("random_events.summon_events.aurora_storm"));
                 startAuroraStorm(player.getWorld());
-                break;
-            default:
-                player.sendMessage(ChatColor.RED + translationManager.getMessage("random_events.unknown_event").replace("%event%", eventName));
-                break;
+            }
+            default -> player.sendMessage(ChatColor.RED + translationManager.getMessage("random_events.unknown_event").replace("%event%", eventName));
         }
     }
 
-    // Start meteor shower for a player
+    public boolean restrictEvent(String eventName) {
+        if (restrictedEvents.contains(eventName)) {
+            return false;
+        }
+        restrictedEvents.add(eventName);
+        return true;
+    }
+
+// Start meteor shower for a player
     private void startMeteorShower(Player player) {
         new BukkitRunnable() {
             private int ticksElapsed = 0; // Track elapsed ticks

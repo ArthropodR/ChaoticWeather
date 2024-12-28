@@ -1,42 +1,52 @@
 messages:
-  language_change_success: "ChaoticWeather: Idioma cambiado con éxito a español."
+  language_change_success: "ChaoticWeather: Idioma cambiado exitosamente a español."
   language_usage: "Uso: /chaoticweather language <eng|fr|es|ru>"
-  invalid_language: "Idioma no válido. Soportados: eng, fr, es, ru."
+  invalid_language: "Idioma inválido. Soportados: eng, fr, es, ru."
 
   command_only_for_players: "Este comando solo puede ser usado por jugadores."
+  no_permission: "No tienes permiso para usar este comando."
   no_permission_reload: "No tienes permiso para recargar el plugin."
   no_permission_summon: "No tienes permiso para invocar eventos."
+  no_permission_language: "No tienes permiso para cambiar el idioma."
   config_reloaded: "ChaoticWeather: Configuración recargada."
   usage_summon: "Uso: /chaoticweather summon <evento>"
-  unknown_command: "Comando desconocido. Uso: /chaoticweather <reload | summon | language>"
-  storm_brewing: "ChaoticWeather: ¡Se está formando una tormenta!"
+  unknown_command: "Comando desconocido. Uso: /chaoticweather <reload | summon | language | restrict>"
+  storm_brewing: "ChaoticWeather: Se está formando una tormenta."
 
   random_events:
-    meteor_shower: "¡Comienza una lluvia de meteoritos!"
-    meteor_impact: "¡Un meteorito golpea la tierra!"
-    treasure_meteor: "¡Un meteorito de tesoro ha aterrizado cerca!"
-    hurricane_winds: "¡Un viento huracanado te empuja!"
+    meteor_shower: "¡Comienza una lluvia de meteoros!"
+    meteor_impact: "¡Un meteoro impacta la tierra!"
+    treasure_meteor: "¡Un meteoro de tesoros ha caído cerca!"
+    hurricane_winds: "¡Una ráfaga de viento repentina te empuja!"
     hailstorm: "¡Una tormenta de granizo congela el mundo a tu alrededor!"
-    aurora_storm: "¡Una rara tormenta auroral ilumina el cielo!"
+    aurora_storm: "¡Una rara tormenta de auroras ilumina el cielo!"
 
     summon_events:
-      meteor_shower: "Invocando una lluvia de meteoritos."
-      meteor_impact: "Invocando un impacto de meteorito."
-      treasure_meteor: "Invocando un meteorito de tesoro."
-      hurricane_winds: "Invocando vientos huracanados."
-      hailstorm: "Invocando una tormenta de granizo."
-      aurora_storm: "Invocando una tormenta auroral."
+      meteor_shower: "¡Invocando una lluvia de meteoros!"
+      meteor_impact: "¡Invocando un impacto de meteorito!"
+      treasure_meteor: "¡Invocando un meteoro de tesoros!"
+      hurricane_winds: "¡Invocando vientos huracanados!"
+      hailstorm: "¡Invocando una tormenta de granizo!"
+      aurora_storm: "¡Invocando una tormenta de auroras!"
 
     unknown_event: "Evento desconocido: %event%"
 
   events:
     rain_effects:
-      speed: "¡Sientes un impulso de energía bajo la lluvia!"
-      increase_damage: "¡La lluvia te ha hecho más fuerte!"
+      speed: "¡Sientes un aumento de energía bajo la lluvia!"
+      increase_damage: "¡La lluvia te hace más fuerte!"
       heal: "¡La lluvia cura tus heridas!"
       blindness: "La lluvia nubla tu visión..."
 
     thunderstorm_effects:
       blindness: "¡Un rayo cae cerca y te sientes desorientado!"
-      slow: "¡La tormenta eléctrica te ralentiza!"
+      slow: "¡La tormenta te ralentiza!"
       increase_damage: "¡Sientes el poder de la tormenta, aumentando tu fuerza!"
+
+  event_restricted: "El evento '%event%' ha sido restringido en la región seleccionada."
+  event_restricted_location: "Este evento está restringido en tu ubicación actual."
+  worldedit_missing: "¡El plugin WorldEdit no está instalado!"
+  worldedit_no_selection: "Primero selecciona una región usando la varita de WorldEdit."
+  error_restricting: "Ocurrió un error al restringir tu región."
+  plugin_enabled: "¡El plugin Chaotic Weather ha sido activado!"
+  plugin_disabled: "¡El plugin Chaotic Weather ha sido desactivado!"

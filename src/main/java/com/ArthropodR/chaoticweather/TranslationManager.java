@@ -10,11 +10,13 @@ import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Level;
+import java.util.Arrays;
 
 public class TranslationManager {
     private final JavaPlugin plugin;
     private final Map<String, String> messages;
     private String currentLanguage;
+    private final String[] supportedLanguages = {"en", "es", "fr", "ru"};
 
     public TranslationManager(JavaPlugin plugin) {
         this.plugin = plugin;
@@ -32,8 +34,7 @@ public class TranslationManager {
     }
 
     private void saveDefaultLanguageFiles() {
-        String[] languages = {"en", "es", "fr", "ru"};
-        for (String lang : languages) {
+        for (String lang : supportedLanguages) {
             saveLanguageFile(lang);
         }
     }
@@ -66,13 +67,9 @@ public class TranslationManager {
             langConfig = YamlConfiguration.loadConfiguration(new InputStreamReader(defaultStream, StandardCharsets.UTF_8));
         }
 
-        // Load all messages with their full paths
         loadMessagesRecursively(langConfig, "messages");
-
         currentLanguage = languageCode;
         plugin.getLogger().info("Loaded " + messages.size() + " translations for " + languageCode);
-        // Debug: Print loaded keys
-        messages.forEach((key, value) -> plugin.getLogger().info("Loaded: " + key));
     }
 
     private void loadMessagesRecursively(YamlConfiguration config, String path) {
@@ -94,7 +91,6 @@ public class TranslationManager {
     }
 
     public String getMessage(String key) {
-        // Add "messages." prefix if not present
         String fullKey = key.startsWith("messages.") ? key : "messages." + key;
         String message = messages.get(fullKey);
 
@@ -103,6 +99,18 @@ public class TranslationManager {
             return "Missing translation key: " + fullKey;
         }
         return message;
+    }
+
+    public void reloadMessages() {
+        loadLanguage(currentLanguage);
+    }
+
+    public boolean setLanguage(String languageCode) {
+        if (Arrays.asList(supportedLanguages).contains(languageCode)) {
+            loadLanguage(languageCode);
+            return true;
+        }
+        return false;
     }
 
     public String getCurrentLanguage() {

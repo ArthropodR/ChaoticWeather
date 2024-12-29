@@ -30,11 +30,11 @@ public class ChaoticWeather extends JavaPlugin implements Listener, TabCompleter
     @Override
     public void onEnable() {
         saveDefaultConfig();
-        reloadConfig();  // Added to ensure config is loaded
+        reloadConfig();
 
         translationManager = new TranslationManager(this);
         restrictedRegionsManager = new RestrictedRegionsManager(this);
-        weatherEvents = new WeatherEvents(this, translationManager);
+        weatherEvents = new WeatherEvents(this, translationManager, restrictedRegionsManager);
         randomWeatherEvents = new RandomWeatherEvents(this, translationManager, restrictedRegionsManager);
 
         // Register events
@@ -52,6 +52,10 @@ public class ChaoticWeather extends JavaPlugin implements Listener, TabCompleter
 
         if (getConfig().getBoolean("events.plant_growth_enhancement")) {
             weatherEvents.startPlantGrowthTask();
+        }
+
+        if (getConfig().getBoolean("events.thunderstorm_effects")) {
+            weatherEvents.startThunderstormEffects();
         }
 
         // Register commands
@@ -134,7 +138,7 @@ public class ChaoticWeather extends JavaPlugin implements Listener, TabCompleter
 
         reloadConfig();
         translationManager.reloadMessages();
-        restrictedRegionsManager.loadRestrictedRegions();  // Added to reload regions
+        restrictedRegionsManager.loadRestrictedRegions();
         player.sendMessage(ChatColor.GREEN + translationManager.getMessage("config_reloaded"));
     }
 
@@ -195,7 +199,7 @@ public class ChaoticWeather extends JavaPlugin implements Listener, TabCompleter
             switch (args[0].toLowerCase()) {
                 case "summon", "restrict" -> {
                     List<String> events = Arrays.asList("meteor_shower", "meteor_impact", "treasure_meteor",
-                            "hurricane_winds", "hailstorm", "aurora_storm");
+                            "hurricane_winds", "hailstorm", "aurora_storm", "rain_effects", "thunderstorm_effects");
                     for (String event : events) {
                         if (event.startsWith(args[1].toLowerCase())) {
                             completions.add(event);

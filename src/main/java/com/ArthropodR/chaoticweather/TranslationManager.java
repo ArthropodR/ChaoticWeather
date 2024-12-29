@@ -54,6 +54,7 @@ public class TranslationManager {
         YamlConfiguration langConfig;
 
         if (langFile.exists()) {
+            plugin.getLogger().info("Found language file: " + langFile.getAbsolutePath());
             langConfig = YamlConfiguration.loadConfiguration(langFile);
         } else {
             InputStream defaultStream = plugin.getResource("lang/" + languageCode + ".yml");
@@ -67,9 +68,16 @@ public class TranslationManager {
             langConfig = YamlConfiguration.loadConfiguration(new InputStreamReader(defaultStream, StandardCharsets.UTF_8));
         }
 
-        loadMessagesRecursively(langConfig, "messages");
-        currentLanguage = languageCode;
-        plugin.getLogger().info("Loaded " + messages.size() + " translations for " + languageCode);
+        try {
+            loadMessagesRecursively(langConfig, "messages");
+            currentLanguage = languageCode;
+            plugin.getLogger().info("Loaded " + messages.size() + " translations for " + languageCode);
+        } catch (Exception e) {
+            plugin.getLogger().log(Level.SEVERE, "Error loading language " + languageCode, e);
+            if (!languageCode.equals("en")) {
+                loadLanguage("en");
+            }
+        }
     }
 
     private void loadMessagesRecursively(YamlConfiguration config, String path) {
@@ -79,13 +87,20 @@ public class TranslationManager {
                 if (config.isConfigurationSection(newPath)) {
                     loadMessagesRecursively(config, newPath);
                 } else {
-                    messages.put(newPath, config.getString(newPath));
+                    String value = config.getString(newPath);
+                    if (value != null) {
+                        messages.put(newPath, value);
+                    } else {
+                        plugin.getLogger().warning("Missing value for key: " + newPath);
+                    }
                 }
             }
         } else {
             String value = config.getString(path);
             if (value != null) {
                 messages.put(path, value);
+            } else {
+                plugin.getLogger().warning("Missing value for path: " + path);
             }
         }
     }

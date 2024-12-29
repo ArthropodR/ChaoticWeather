@@ -1,7 +1,7 @@
 messages:
   language_change_success: "ChaoticWeather: Successfully changed the language to English."
   language_usage: "Usage: /chaoticweather language <eng|fr|es|ru>"
-  invalid_language: "Invalid language. Supported: eng, fr, es, ru."
+  invalid_language: "Invalid language. Supported: en, fr, es, ru."
 
   command_only_for_players: "This command can only be used by players."
   no_permission: "You do not have permission to use this command."
@@ -11,6 +11,8 @@ messages:
   config_reloaded: "ChaoticWeather: Configuration reloaded."
   usage_summon: "Usage: /chaoticweather summon <event>"
   unknown_command: "Unknown command. Usage: /chaoticweather <reload | summon | language | restrict>"
+  weather_effects_restricted: "Weather effects have been restricted in the selected region."
+  invalid_event: "Invalid event name. Only 'weather_effects' is supported for restriction."
   storm_brewing: "ChaoticWeather: A storm is brewing!"
 
   random_events:

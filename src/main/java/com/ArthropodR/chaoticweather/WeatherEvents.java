@@ -17,6 +17,7 @@ import java.util.Set;
 public class WeatherEvents {
     private final ChaoticWeather plugin;
     private final TranslationManager translationManager;
+    private final RestrictedRegionsManager restrictedRegionsManager;
     private final Set<Player> activeRainPlayers = new HashSet<>();
     private final Set<Player> activeThunderstormPlayers = new HashSet<>();
     private final Map<Player, Long> rainEffectsApplied = new HashMap<>();
@@ -24,9 +25,10 @@ public class WeatherEvents {
 
     private static final long COOLDOWN_PERIOD = 10 * 60 * 1000; // 10 minutes in milliseconds
 
-    public WeatherEvents(ChaoticWeather plugin, TranslationManager translationManager) {
+    public WeatherEvents(ChaoticWeather plugin, TranslationManager translationManager, RestrictedRegionsManager restrictedRegionsManager) {
         this.plugin = plugin;
         this.translationManager = translationManager;
+        this.restrictedRegionsManager = restrictedRegionsManager;
     }
 
     public void startRainEffectTask() {
@@ -36,6 +38,10 @@ public class WeatherEvents {
                 if (Bukkit.getWorlds().get(0).hasStorm()) {
                     for (Player player : Bukkit.getOnlinePlayers()) {
                         if (player.getWorld().hasStorm() && player.getLocation().getY() > 64 && !activeRainPlayers.contains(player)) {
+                            if (restrictedRegionsManager.isRestricted("rain_effects", player.getLocation())) {
+                                continue; // Skip restricted regions
+                            }
+
                             long lastAppliedTime = rainEffectsApplied.getOrDefault(player, 0L);
                             if (System.currentTimeMillis() - lastAppliedTime >= COOLDOWN_PERIOD && Math.random() < plugin.getConfig().getDouble("events.rain_effects_probability", 0.5)) {
                                 activeRainPlayers.add(player);
@@ -111,6 +117,10 @@ public class WeatherEvents {
 
                 for (int y = highestBlock.getY(); y >= world.getMinHeight(); y--) {
                     Block block = world.getBlockAt(x, y, z);
+                    if (restrictedRegionsManager.isRestricted("plant_growth", block.getLocation())) {
+                        continue; // Skip restricted regions
+                    }
+
                     if (isCrop(block)) {
                         BlockData blockData = block.getBlockData();
                         if (blockData instanceof Ageable) {
@@ -144,6 +154,10 @@ public class WeatherEvents {
                 if (Bukkit.getWorlds().get(0).isThundering()) {
                     for (Player player : Bukkit.getOnlinePlayers()) {
                         if (player.getWorld().isThundering() && player.getLocation().getY() > 64 && !activeThunderstormPlayers.contains(player)) {
+                            if (restrictedRegionsManager.isRestricted("thunderstorm_effects", player.getLocation())) {
+                                continue; // Skip restricted regions
+                            }
+
                             long lastAppliedTime = thunderstormEffectsApplied.getOrDefault(player, 0L);
                             if (System.currentTimeMillis() - lastAppliedTime >= COOLDOWN_PERIOD && Math.random() < plugin.getConfig().getDouble("events.thunderstorm_effects_probability", 0.5)) {
                                 activeThunderstormPlayers.add(player);

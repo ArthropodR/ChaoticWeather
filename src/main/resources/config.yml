@@ -32,3 +32,9 @@ events:
   thunderstorm_effects_probability: 3  # 1 = Blindness, 2 = Slowness, 3 = Strength (thunderstorm effects)
   plant_growth_enhancement: true  # Whether plant growth is enhanced during rain (e.g., flowers or crops growing faster)
   thunderstorm_damage_effects: true  # Whether to apply damage effects during thunderstorms (e.g., lightning strikes)
+
+# Worlds where Chaotic Weather events are disabled
+disabled_worlds:
+  - world_nether
+  - world_the_end
+  # Add more worlds as needed

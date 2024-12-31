@@ -1,19 +1,19 @@
 package com.ArthropodR.chaoticweather;
 
 import org.bukkit.*;
+import org.bukkit.block.Biome;
+import org.bukkit.entity.EntityType;
+import org.bukkit.entity.Fireball;
+import org.bukkit.entity.Player;
+import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.block.Block;
 import org.bukkit.enchantments.Enchantment;
-import org.bukkit.entity.*;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
-import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
-import org.bukkit.scheduler.BukkitRunnable;
-import org.bukkit.plugin.java.JavaPlugin;
-import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.util.Vector;
-import org.bukkit.block.Biome;
 
 import java.util.*;
 
@@ -24,8 +24,7 @@ public class RandomWeatherEvents {
     private final TranslationManager translationManager;
     private final RestrictedRegionsManager restrictedRegionsManager;
 
-    // List to store restricted events
-    private Set<String> restrictedEvents = new HashSet<>();
+    private final Set<String> restrictedEvents = new HashSet<>();
 
     public RandomWeatherEvents(JavaPlugin plugin, TranslationManager translationManager, RestrictedRegionsManager restrictedRegionsManager) {
         this.plugin = plugin;
@@ -42,6 +41,7 @@ public class RandomWeatherEvents {
                 if (eventInProgress) return;
 
                 for (World world : Bukkit.getWorlds()) {
+                    if (isWorldDisabled(world)) continue; // Skip disabled worlds
                     triggerRandomEvent(world);
                 }
             }
@@ -55,7 +55,7 @@ public class RandomWeatherEvents {
     private void triggerRandomEvent(World world) {
         if (eventInProgress) return;
 
-        List<Player> players = new ArrayList<>(Bukkit.getOnlinePlayers());
+        List<Player> players = new ArrayList<>(world.getPlayers());
         if (players.isEmpty()) return;
 
         Player player = players.get(random.nextInt(players.size()));
@@ -99,7 +99,7 @@ public class RandomWeatherEvents {
             }
         }
 
-        // Schedule eventInProgress reset
+
         new BukkitRunnable() {
             @Override
             public void run() {
@@ -119,41 +119,92 @@ public class RandomWeatherEvents {
     }
 
     public void summonEvent(Player player, String eventName) {
+        World world = player.getWorld();
+
+        // Check if the world is disabled
+        if (isWorldDisabled(world)) {
+            String disabledWorldMessage = translationManager.getMessage("random_events.disabled_world");
+            if (disabledWorldMessage == null) {
+                disabledWorldMessage = "Events are disabled in this world: %world%";
+            }
+            player.sendMessage(ChatColor.RED + disabledWorldMessage.replace("%world%", world.getName()));
+            return;
+        }
+
         Location playerLocation = player.getLocation();
 
         // Check for region restrictions
         if (restrictedRegionsManager.isRestricted(eventName, playerLocation)) {
-            player.sendMessage(ChatColor.RED + translationManager.getMessage("event_restricted").replace("%event%", eventName));
+            String restrictedMessage = translationManager.getMessage("event_restricted");
+            if (restrictedMessage == null) {
+                restrictedMessage = "The event '%event%' is restricted in this region.";
+            }
+            player.sendMessage(ChatColor.RED + restrictedMessage.replace("%event%", eventName));
             return;
         }
 
         switch (eventName.toLowerCase()) {
             case "meteor_shower" -> {
-                player.sendMessage(ChatColor.LIGHT_PURPLE + translationManager.getMessage("random_events.summon_events.meteor_shower"));
+                String meteorShowerMessage = translationManager.getMessage("random_events.summon_events.meteor_shower");
+                if (meteorShowerMessage == null) {
+                    meteorShowerMessage = "Summoning a meteor shower!";
+                }
+                player.sendMessage(ChatColor.LIGHT_PURPLE + meteorShowerMessage);
                 startMeteorShower(player);
             }
             case "meteor_impact" -> {
-                player.sendMessage(ChatColor.RED + translationManager.getMessage("random_events.summon_events.meteor_impact"));
+                String meteorImpactMessage = translationManager.getMessage("random_events.summon_events.meteor_impact");
+                if (meteorImpactMessage == null) {
+                    meteorImpactMessage = "A meteor is about to impact!";
+                }
+                player.sendMessage(ChatColor.RED + meteorImpactMessage);
                 spawnMeteorImpact(player);
             }
             case "treasure_meteor" -> {
-                player.sendMessage(ChatColor.GOLD + translationManager.getMessage("random_events.summon_events.treasure_meteor"));
+                String treasureMeteorMessage = translationManager.getMessage("random_events.summon_events.treasure_meteor");
+                if (treasureMeteorMessage == null) {
+                    treasureMeteorMessage = "A treasure-filled meteor is coming!";
+                }
+                player.sendMessage(ChatColor.GOLD + treasureMeteorMessage);
                 spawnTreasureMeteor(player);
             }
             case "hurricane_winds" -> {
-                player.sendMessage(ChatColor.BLUE + translationManager.getMessage("random_events.summon_events.hurricane_winds"));
+                String hurricaneWindsMessage = translationManager.getMessage("random_events.summon_events.hurricane_winds");
+                if (hurricaneWindsMessage == null) {
+                    hurricaneWindsMessage = "Strong hurricane winds are forming!";
+                }
+                player.sendMessage(ChatColor.BLUE + hurricaneWindsMessage);
                 HurricaneWinds(player);
             }
             case "hailstorm" -> {
-                player.sendMessage(ChatColor.AQUA + translationManager.getMessage("random_events.summon_events.hailstorm"));
+                String hailstormMessage = translationManager.getMessage("random_events.summon_events.hailstorm");
+                if (hailstormMessage == null) {
+                    hailstormMessage = "A hailstorm is approaching!";
+                }
+                player.sendMessage(ChatColor.AQUA + hailstormMessage);
                 hailstorm(player);
             }
             case "aurora_storm" -> {
-                player.sendMessage(ChatColor.GREEN + translationManager.getMessage("random_events.summon_events.aurora_storm"));
+                String auroraStormMessage = translationManager.getMessage("random_events.summon_events.aurora_storm");
+                if (auroraStormMessage == null) {
+                    auroraStormMessage = "An aurora storm lights up the skies!";
+                }
+                player.sendMessage(ChatColor.GREEN + auroraStormMessage);
                 startAuroraStorm(player.getWorld());
             }
-            default -> player.sendMessage(ChatColor.RED + translationManager.getMessage("random_events.unknown_event").replace("%event%", eventName));
+            default -> {
+                String unknownEventMessage = translationManager.getMessage("random_events.unknown_event");
+                if (unknownEventMessage == null) {
+                    unknownEventMessage = "Unknown event: %event%";
+                }
+                player.sendMessage(ChatColor.RED + unknownEventMessage.replace("%event%", eventName));
+            }
         }
+    }
+
+    private boolean isWorldDisabled(World world) {
+        List<String> disabledWorlds = plugin.getConfig().getStringList("disabled_worlds");
+        return disabledWorlds.contains(world.getName());
     }
 
     public boolean restrictEvent(String eventName) {

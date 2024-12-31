@@ -20,10 +20,10 @@ public class WeatherEvents {
     private final RestrictedRegionsManager restrictedRegionsManager;
     private final Set<Player> activeRainPlayers = new HashSet<>();
     private final Set<Player> activeThunderstormPlayers = new HashSet<>();
-    private final Map<Player, Long> rainEffectsApplied = new HashMap<>();
-    private final Map<Player, Long> thunderstormEffectsApplied = new HashMap<>();
+    private final Map<Player, Long> rainEffectsCooldown = new HashMap<>();
+    private final Map<Player, Long> thunderstormEffectsCooldown = new HashMap<>();
 
-    private static final long COOLDOWN_PERIOD = 10 * 60 * 1000; // 10 minutes in milliseconds
+    private static final long COOLDOWN_PERIOD = 5 * 60 * 1000; // 5 minutes in milliseconds
 
     public WeatherEvents(ChaoticWeather plugin, TranslationManager translationManager, RestrictedRegionsManager restrictedRegionsManager) {
         this.plugin = plugin;
@@ -42,12 +42,11 @@ public class WeatherEvents {
                                 continue; // Skip restricted regions
                             }
 
-                            long lastAppliedTime = rainEffectsApplied.getOrDefault(player, 0L);
-                            if (System.currentTimeMillis() - lastAppliedTime >= COOLDOWN_PERIOD && Math.random() < plugin.getConfig().getDouble("events.rain_effects_probability", 0.5)) {
+                            long lastAppliedTime = rainEffectsCooldown.getOrDefault(player, 0L);
+                            if (System.currentTimeMillis() - lastAppliedTime >= COOLDOWN_PERIOD) {
                                 activeRainPlayers.add(player);
                                 applyRainEffects(player);
-
-                                rainEffectsApplied.put(player, System.currentTimeMillis());
+                                rainEffectsCooldown.put(player, System.currentTimeMillis());
 
                                 new BukkitRunnable() {
                                     @Override
@@ -158,12 +157,11 @@ public class WeatherEvents {
                                 continue; // Skip restricted regions
                             }
 
-                            long lastAppliedTime = thunderstormEffectsApplied.getOrDefault(player, 0L);
-                            if (System.currentTimeMillis() - lastAppliedTime >= COOLDOWN_PERIOD && Math.random() < plugin.getConfig().getDouble("events.thunderstorm_effects_probability", 0.5)) {
+                            long lastAppliedTime = thunderstormEffectsCooldown.getOrDefault(player, 0L);
+                            if (System.currentTimeMillis() - lastAppliedTime >= COOLDOWN_PERIOD) {
                                 activeThunderstormPlayers.add(player);
                                 applyThunderstormEffects(player);
-
-                                thunderstormEffectsApplied.put(player, System.currentTimeMillis());
+                                thunderstormEffectsCooldown.put(player, System.currentTimeMillis());
 
                                 new BukkitRunnable() {
                                     @Override

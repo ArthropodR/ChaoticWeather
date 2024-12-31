@@ -5,10 +5,7 @@ import com.sk89q.worldedit.bukkit.WorldEditPlugin;
 import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.regions.Region;
 import org.bukkit.*;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandExecutor;
-import org.bukkit.command.CommandSender;
-import org.bukkit.command.TabCompleter;
+import org.bukkit.command.*;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -27,6 +24,8 @@ public class ChaoticWeather extends JavaPlugin implements Listener, TabCompleter
     private TranslationManager translationManager;
     private RestrictedRegionsManager restrictedRegionsManager;
 
+    private List<String> disabledWorlds;
+
     @Override
     public void onEnable() {
         saveDefaultConfig();
@@ -37,11 +36,11 @@ public class ChaoticWeather extends JavaPlugin implements Listener, TabCompleter
         weatherEvents = new WeatherEvents(this, translationManager, restrictedRegionsManager);
         randomWeatherEvents = new RandomWeatherEvents(this, translationManager, restrictedRegionsManager);
 
-        // Register events
-        Bukkit.getPluginManager().registerEvents(this, this);
-        getLogger().info("Chaotic Weather plugin has been enabled!");
+        disabledWorlds = getConfig().getStringList("disabled_worlds");
 
-        // Start scheduled tasks if enabled in config
+        Bukkit.getPluginManager().registerEvents(this, this);
+        getLogger().info(translationManager.getMessage("plugin_enabled"));
+
         if (getConfig().getBoolean("random_events.enabled")) {
             randomWeatherEvents.startRandomEvents();
         }
@@ -58,9 +57,23 @@ public class ChaoticWeather extends JavaPlugin implements Listener, TabCompleter
             weatherEvents.startThunderstormEffects();
         }
 
-        // Register commands
         Objects.requireNonNull(getCommand("chaoticweather")).setExecutor(this);
         Objects.requireNonNull(getCommand("chaoticweather")).setTabCompleter(this);
+    }
+
+    @Override
+    public void onDisable() {
+        Bukkit.getScheduler().cancelTasks(this);
+        weatherEvents = null;
+        randomWeatherEvents = null;
+        translationManager = null;
+        restrictedRegionsManager = null;
+
+        getLogger().info(translationManager.getMessage("plugin_disabled"));
+    }
+
+    private boolean isWorldDisabled(World world) {
+        return disabledWorlds.contains(world.getName());
     }
 
     @Override
@@ -76,6 +89,17 @@ public class ChaoticWeather extends JavaPlugin implements Listener, TabCompleter
         }
 
         switch (args[0].toLowerCase()) {
+            case "world" -> {
+                if (args.length < 2) {
+                    sender.sendMessage(ChatColor.YELLOW + translationManager.getMessage("usage_world"));
+                    return true;
+                }
+                switch (args[1].toLowerCase()) {
+                    case "enable" -> handleEnableWorldCommand(player, args);
+                    case "disable" -> handleDisableWorldCommand(player, args);
+                    default -> sender.sendMessage(ChatColor.RED + translationManager.getMessage("unknown_command"));
+                }
+            }
             case "restrict" -> handleRestrictCommand(player, args);
             case "reload" -> handleReloadCommand(player);
             case "summon" -> handleSummonCommand(player, args);
@@ -92,11 +116,16 @@ public class ChaoticWeather extends JavaPlugin implements Listener, TabCompleter
         }
 
         if (args.length < 2) {
-            player.sendMessage(ChatColor.YELLOW + "Usage: /chaoticweather restrict <event_name>");
+            player.sendMessage(ChatColor.YELLOW + translationManager.getMessage("usage_restrict"));
             return;
         }
 
         String eventName = args[1].toLowerCase();
+        if (eventName.equals("weather_events")) {
+            handleRestrictWeatherEventsCommand(player);
+            return;
+        }
+
         WorldEditPlugin worldEdit = (WorldEditPlugin) Bukkit.getPluginManager().getPlugin("WorldEdit");
 
         if (worldEdit == null) {
@@ -105,7 +134,6 @@ public class ChaoticWeather extends JavaPlugin implements Listener, TabCompleter
         }
 
         try {
-            // Get the WorldEdit selection
             Region selection = worldEdit.getSession(player).getSelection(BukkitAdapter.adapt(player.getWorld()));
 
             if (selection == null) {
@@ -113,20 +141,47 @@ public class ChaoticWeather extends JavaPlugin implements Listener, TabCompleter
                 return;
             }
 
-            // Convert BlockVector3 to Location using BukkitAdapter
-            World world = player.getWorld();
             BlockVector3 minPoint = selection.getMinimumPoint();
             BlockVector3 maxPoint = selection.getMaximumPoint();
 
-            Location pos1 = new Location(world, minPoint.getX(), minPoint.getY(), minPoint.getZ());
-            Location pos2 = new Location(world, maxPoint.getX(), maxPoint.getY(), maxPoint.getZ());
+            Location pos1 = new Location(player.getWorld(), minPoint.getX(), minPoint.getY(), minPoint.getZ());
+            Location pos2 = new Location(player.getWorld(), maxPoint.getX(), maxPoint.getY(), maxPoint.getZ());
 
-            // Add the restricted region using the converted Locations
             restrictedRegionsManager.addRestrictedRegion(eventName, pos1, pos2);
             player.sendMessage(ChatColor.GREEN + translationManager.getMessage("event_restricted").replace("%event%", eventName));
         } catch (Exception e) {
             player.sendMessage(ChatColor.RED + translationManager.getMessage("error_restricting"));
-            e.printStackTrace(); // Added for better error logging
+            e.printStackTrace();
+        }
+    }
+
+    private void handleRestrictWeatherEventsCommand(Player player) {
+        WorldEditPlugin worldEdit = (WorldEditPlugin) Bukkit.getPluginManager().getPlugin("WorldEdit");
+
+        if (worldEdit == null) {
+            player.sendMessage(ChatColor.RED + translationManager.getMessage("worldedit_missing"));
+            return;
+        }
+
+        try {
+            Region selection = worldEdit.getSession(player).getSelection(BukkitAdapter.adapt(player.getWorld()));
+
+            if (selection == null) {
+                player.sendMessage(ChatColor.RED + translationManager.getMessage("worldedit_no_selection"));
+                return;
+            }
+
+            BlockVector3 minPoint = selection.getMinimumPoint();
+            BlockVector3 maxPoint = selection.getMaximumPoint();
+
+            Location pos1 = new Location(player.getWorld(), minPoint.getX(), minPoint.getY(), minPoint.getZ());
+            Location pos2 = new Location(player.getWorld(), maxPoint.getX(), maxPoint.getY(), maxPoint.getZ());
+
+            restrictedRegionsManager.addRestrictedRegion("weather_events", pos1, pos2);
+            player.sendMessage(ChatColor.GREEN + translationManager.getMessage("weather_events_restricted"));
+        } catch (Exception e) {
+            player.sendMessage(ChatColor.RED + translationManager.getMessage("error_restricting"));
+            e.printStackTrace();
         }
     }
 
@@ -181,12 +236,86 @@ public class ChaoticWeather extends JavaPlugin implements Listener, TabCompleter
         }
     }
 
+    private void handleEnableWorldCommand(Player player, String[] args) {
+        if (!player.isOp()) {
+            player.sendMessage(ChatColor.RED + translationManager.getMessage("no_permission"));
+            return;
+        }
+
+        if (args.length < 3) {
+            player.sendMessage(ChatColor.YELLOW + translationManager.getMessage("usage_world"));
+            return;
+        }
+
+        String worldName = args[2];
+        World world = Bukkit.getWorld(worldName);
+
+        if (world == null) {
+            player.sendMessage(ChatColor.RED + translationManager.getMessage("world_not_found"));
+            return;
+        }
+
+        if (!disabledWorlds.contains(worldName)) {
+            player.sendMessage(ChatColor.RED + translationManager.getMessage("world_not_disabled"));
+            return;
+        }
+
+        disabledWorlds.remove(worldName);
+        getConfig().set("disabled_worlds", disabledWorlds);
+        saveConfig();
+
+        player.sendMessage(ChatColor.GREEN + translationManager.getMessage("world_enabled_message").replace("%world%", worldName));
+    }
+
+    private void handleDisableWorldCommand(Player player, String[] args) {
+        if (!player.isOp()) {
+            player.sendMessage(ChatColor.RED + translationManager.getMessage("no_permission"));
+            return;
+        }
+
+        if (args.length < 3) {
+            player.sendMessage(ChatColor.YELLOW + translationManager.getMessage("usage_world"));
+            return;
+        }
+
+        String worldName = args[2];
+        World world = Bukkit.getWorld(worldName);
+
+        if (world == null) {
+            player.sendMessage(ChatColor.RED + translationManager.getMessage("world_not_found"));
+            return;
+        }
+
+        if (disabledWorlds.contains(worldName)) {
+            player.sendMessage(ChatColor.RED + translationManager.getMessage("world_already_disabled"));
+            return;
+        }
+
+        disabledWorlds.add(worldName);
+        getConfig().set("disabled_worlds", disabledWorlds);
+        saveConfig();
+
+        player.sendMessage(ChatColor.GREEN + translationManager.getMessage("world_disabled_message").replace("%world%", worldName));
+    }
+
+    @EventHandler
+    public void onWeatherChange(WeatherChangeEvent event) {
+        if (isWorldDisabled(event.getWorld())) {
+            event.setCancelled(true); // Prevent weather change in disabled worlds
+            return;
+        }
+
+        if (event.toWeatherState()) {
+            Bukkit.broadcastMessage(ChatColor.GOLD + translationManager.getMessage("storm_brewing"));
+        }
+    }
+
     @Override
     @Nullable
     public List<String> onTabComplete(@NotNull CommandSender sender, @NotNull Command command, @NotNull String alias, @NotNull String[] args) {
         if (args.length == 1) {
             List<String> completions = new ArrayList<>();
-            List<String> commands = Arrays.asList("reload", "summon", "language", "restrict");
+            List<String> commands = Arrays.asList("reload", "summon", "language", "restrict", "world");
 
             for (String cmd : commands) {
                 if (cmd.startsWith(args[0].toLowerCase())) {
@@ -194,48 +323,32 @@ public class ChaoticWeather extends JavaPlugin implements Listener, TabCompleter
                 }
             }
             return completions;
-        } else if (args.length == 2) {
-            List<String> completions = new ArrayList<>();
-            switch (args[0].toLowerCase()) {
-                case "summon", "restrict" -> {
-                    List<String> events = Arrays.asList("meteor_shower", "meteor_impact", "treasure_meteor",
-                            "hurricane_winds", "hailstorm", "aurora_storm", "rain_effects", "thunderstorm_effects");
-                    for (String event : events) {
-                        if (event.startsWith(args[1].toLowerCase())) {
-                            completions.add(event);
-                        }
-                    }
-                }
-                case "language" -> {
-                    List<String> languages = Arrays.asList("en", "fr", "es", "ru");
-                    for (String lang : languages) {
-                        if (lang.startsWith(args[1].toLowerCase())) {
-                            completions.add(lang);
-                        }
-                    }
-                }
+        }
+
+        if (args.length == 2 && args[0].equalsIgnoreCase("language")) {
+            return Arrays.asList("en", "fr", "es", "ru");
+        }
+
+        if (args.length == 2 && args[0].equalsIgnoreCase("world")) {
+            return Arrays.asList("enable", "disable");
+        }
+
+        if (args.length == 3 && (args[1].equalsIgnoreCase("enable") || args[1].equalsIgnoreCase("disable"))) {
+            List<String> worldNames = new ArrayList<>();
+            for (World world : Bukkit.getWorlds()) {
+                worldNames.add(world.getName());
             }
-            return completions;
+            return worldNames;
         }
-        return new ArrayList<>();
-    }
 
-    @Override
-    public void onDisable() {
-        // Cancel all tasks and clean up
-        Bukkit.getScheduler().cancelTasks(this);
-        weatherEvents = null;
-        randomWeatherEvents = null;
-        translationManager = null;
-        restrictedRegionsManager = null;
-
-        getLogger().info("Chaotic Weather plugin has been disabled!");
-    }
-
-    @EventHandler
-    public void onWeatherChange(WeatherChangeEvent event) {
-        if (event.toWeatherState()) {
-            Bukkit.broadcastMessage(ChatColor.GOLD + translationManager.getMessage("storm_brewing"));
+        if (args.length == 2 && args[0].equalsIgnoreCase("restrict")) {
+            return Arrays.asList("meteor_shower", "meteor_impact", "treasure_meteor", "hurricane_winds", "hailstorm", "aurora_storm", "weather_events");
         }
+
+        if (args.length == 2 && args[0].equalsIgnoreCase("summon")) {
+            return Arrays.asList("meteor_shower", "meteor_impact", "treasure_meteor", "hurricane_winds", "hailstorm", "aurora_storm");
+        }
+
+        return Collections.emptyList();
     }
 }

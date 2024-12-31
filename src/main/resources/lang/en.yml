@@ -1,7 +1,8 @@
 messages:
-  language_change_success: "ChaoticWeather: Successfully changed the language to English."
-  language_usage: "Usage: /chaoticweather language <eng|fr|es|ru>"
-  invalid_language: "Invalid language. Supported: en, fr, es, ru."
+  # General
+  language_change_success: "ChaoticWeather: Language successfully changed to English."
+  language_usage: "Usage: /chaoticweather language <en|fr|es|ru>"
+  invalid_language: "Invalid language. Supported languages: en, fr, es, ru."
 
   command_only_for_players: "This command can only be used by players."
   no_permission: "You do not have permission to use this command."
@@ -10,11 +11,12 @@ messages:
   no_permission_language: "You do not have permission to change the language."
   config_reloaded: "ChaoticWeather: Configuration reloaded."
   usage_summon: "Usage: /chaoticweather summon <event>"
-  unknown_command: "Unknown command. Usage: /chaoticweather <reload | summon | language | restrict>"
+  unknown_command: "Unknown command. Usage: /chaoticweather <reload | summon | language | restrict | world>"
   weather_effects_restricted: "Weather effects have been restricted in the selected region."
   invalid_event: "Invalid event name. Only 'weather_effects' is supported for restriction."
   storm_brewing: "ChaoticWeather: A storm is brewing!"
 
+  # Random events
   random_events:
     meteor_shower: "A meteor shower begins!"
     meteor_impact: "A meteor strikes the earth!"
@@ -23,6 +25,9 @@ messages:
     hailstorm: "A hailstorm freezes the world around you!"
     aurora_storm: "A rare Aurora Storm lights up the sky!"
 
+    disabled_world: "The event cannot be summoned because the world '%world%' is disabled."
+
+    # Summon events
     summon_events:
       meteor_shower: "Summoning a Meteor Shower!"
       meteor_impact: "Summoning a Meteor Impact!"
@@ -31,24 +36,38 @@ messages:
       hailstorm: "Summoning a Hailstorm!"
       aurora_storm: "Summoning an Aurora Storm!"
 
-    unknown_event: "Unknown event: %event%"
+  unknown_event: "Unknown event: %event%"
 
+  # Weather event effects
   events:
     rain_effects:
-      speed: "You feel a boost of energy in the rain!"
-      increase_damage: "The rain has made you stronger!"
+      speed: "You feel a burst of energy from the rain!"
+      increase_damage: "The rain makes you stronger!"
       heal: "The rain heals your wounds!"
       blindness: "The rain clouds your vision..."
 
     thunderstorm_effects:
-      blindness: "A lightning bolt strikes nearby, and you feel disoriented!"
-      slow: "The thunderstorm slows you down!"
-      increase_damage: "You feel the power of the storm, boosting your strength!"
+      blindness: "A lightning strike nearby makes you feel disoriented!"
+      slow: "The storm slows you down!"
+      increase_damage: "You feel the power of the storm, increasing your strength!"
 
   event_restricted: "The event '%event%' has been restricted in the selected region."
   event_restricted_location: "This event is restricted in your current location."
-  worldedit_missing: "WorldEdit plugin is not installed!"
-  worldedit_no_selection: "Please select a region using the WorldEdit wand first."
+  worldedit_missing: "The WorldEdit plugin is not installed!"
+  worldedit_no_selection: "Please select a region with the WorldEdit wand."
   error_restricting: "An error occurred while processing your region selection."
-  plugin_enabled: "Chaotic Weather plugin has been enabled!"
-  plugin_disabled: "Chaotic Weather plugin has been disabled!"
+  plugin_enabled: "The ChaoticWeather plugin has been enabled!"
+  plugin_disabled: "The ChaoticWeather plugin has been disabled!"
+  world_disabled: "Events are disabled in this world."
+  world_enabled: "Events have been re-enabled in this world."
+  weather_events_restricted:  "The event 'weather_events' has been restricted in the selected region."
+
+  # For disabling and enabling worlds
+  world_disabled_message: "World %world% has been disabled for ChaoticWeather."
+  world_enabled_message: "World %world% has been enabled for ChaoticWeather."
+  disable_world_usage: "Usage: /chaoticweather world disable <world_name>"
+  enable_world_usage: "Usage: /chaoticweather world enable <world_name>"
+  world_not_found: "World not found."
+  world_already_disabled: "World is already disabled"
+  world_not_disabled: "World is not disabled"
+  usage_world: "Usage: /chaoticweather world <enable|disable> <world_name>"
